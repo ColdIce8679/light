@@ -4,8 +4,8 @@ window.onload = () => {
     const HEIGHT = window.innerHeight / 2;
     const WIDTH = window.innerWidth;
 
-    const h_count = Math.floor(HEIGHT / 100);
-    const w_count = Math.floor(WIDTH / 110) + 1;
+    const h_count = Math.floor(HEIGHT / 150);
+    const w_count = Math.floor(WIDTH / 200) + 1;
 
     let ball_key = 0;
     let fixW = (WIDTH - (w_count * 100)) / (w_count + 1);
@@ -22,13 +22,12 @@ window.onload = () => {
         }
     }
 
-    const data = 'a b c d e f g h i j k l';
-    var c = data.split(' ');
-    var key = 0;
+    const c = [];
+    let key = 0;
     clearInterval(timer);
     clearInterval(timer2);
     let in_c = [];
-    timer = setInterval(function () {
+    timer = setInterval(function() {
         var speed = 0.5;
         const odiv = document.querySelectorAll('.circle');
 
@@ -65,51 +64,111 @@ window.onload = () => {
         circleDIV.className = 'child';
         let test = '';
         while (true) {
-            test = c[Math.floor(Math.random() * (c.length)) + 1];
+            if (c.length !== 0) test = c[Math.floor(Math.random() * (c.length))];
+
             if (online.indexOf(test.toString()) === -1) {
                 circleDIV.innerHTML = test;
                 break;
             } else {
-                if (online.length >= c.length) {
-                    circleDIV.innerHTML = '';
-                    break;
-                }
+                if (online.length === c.length) break;
             }
         }
 
         if (first) {
-            modalDiv.appendChild(circleDIV);
-            online.unshift(circleDIV.innerHTML);
-            first = false;
-        } else {
-            if (x === 4) {
-                modalDiv.removeChild(modalDiv.lastChild);
-                online.pop();
-            } else {
-                x += 1;
+            if (circleDIV.innerHTML !== '') {
+                modalDiv.appendChild(circleDIV);
+                online.unshift(circleDIV.innerHTML);
+                first = false;
             }
-            online.unshift(circleDIV.innerHTML);
-            modalDiv.insertBefore(circleDIV, modalDiv.childNodes[0]);
+        } else {
+            if (circleDIV.innerHTML !== '') {
+                if (x === 4) {
+                    modalDiv.removeChild(modalDiv.lastChild);
+                    online.pop();
+                } else {
+                    x += 1;
+                }
+                online.unshift(circleDIV.innerHTML);
+                modalDiv.insertBefore(circleDIV, modalDiv.childNodes[0]);
+            }
         }
     }, 10000);
 
-    var key_pressed = {};
-    window.addEventListener("keyup", (e) => {
-        key_pressed[e.key] = false;
-    });
+    let check = '';
+    let str_data = '';
     window.addEventListener("keydown", (e) => {
-        key_pressed[e.key] = true;
-    });
+        if (check === '') {
+            // first  
+            check = e.key;
+        } else {
+            // 塞資訊
+            if (e.key !== 'Shift' && e.key !== 'Clear' && e.key !== ' ' && e.key !== 'Enter') {
+                str_data += e.key;
+            }
 
-    // setInterval(() => {
-    //     let check = false;
-    //     for (var key in key_pressed) {
-    //         if(key_pressed[key] === 'space'){
-    //             check = true;
-    //         }
-    //         if (key_pressed[key]) {
-    //             console.log(key + " is down");
-    //         }
-    //     }
-    // }, 50);
+            if (check === 'Clear' && e.key === 'Clear') {
+                console.log(str_data, c.indexOf(str_data))
+                if (c.indexOf(str_data) === -1) {
+                    c.push(str_data);
+                } else {
+                    const circleDIV = document.createElement('div');
+                    circleDIV.className = 'child';
+                    circleDIV.innerHTML = str_data;
+                    if (online.indexOf(str_data) == -1) {
+                        if (first) {
+                            if (circleDIV.innerHTML !== '') {
+                                modalDiv.appendChild(circleDIV);
+                                online.unshift(circleDIV.innerHTML);
+                                first = false;
+                            }
+                        } else {
+                            if (circleDIV.innerHTML !== '') {
+                                if (x === 4) {
+                                    modalDiv.removeChild(modalDiv.lastChild);
+                                    online.pop();
+                                } else {
+                                    x += 1;
+                                }
+                                online.unshift(circleDIV.innerHTML);
+                                modalDiv.insertBefore(circleDIV, modalDiv.childNodes[0]);
+                            }
+                        }
+                    }
+                }
+                str_data = '';
+                check = '';
+            } else if (check >= 0 && check <= 9 && e.key === 'Enter') {
+                console.log(`${check}${str_data}`, c.indexOf(`${check}${str_data}`))
+                if (c.indexOf(`${check}${str_data}`) === -1) {
+                    c.push(`${check}${str_data}`);
+                } else {
+                    const circleDIV = document.createElement('div');
+                    circleDIV.className = 'child';
+                    circleDIV.innerHTML = `${check}${str_data}`;
+                    if (online.indexOf(`${check}${str_data}`) == -1) {
+                        if (first) {
+                            if (circleDIV.innerHTML !== '') {
+                                modalDiv.appendChild(circleDIV);
+                                online.unshift(circleDIV.innerHTML);
+                                first = false;
+                            }
+                        } else {
+                            if (circleDIV.innerHTML !== '') {
+                                if (x === 4) {
+                                    modalDiv.removeChild(modalDiv.lastChild);
+                                    online.pop();
+                                } else {
+                                    x += 1;
+                                }
+                                online.unshift(circleDIV.innerHTML);
+                                modalDiv.insertBefore(circleDIV, modalDiv.childNodes[0]);
+                            }
+                        }
+                    }
+                }
+                str_data = '';
+                check = '';
+            }
+        }
+    });
 }
